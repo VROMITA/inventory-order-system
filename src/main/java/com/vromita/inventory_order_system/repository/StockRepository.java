@@ -14,6 +14,8 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     Optional<Stock> findByProductIdAndWarehouseId(Long productId, Long warehouseId);
 
+    Optional<Stock> findFirstByProductIdAndQuantityGreaterThanEqual(Long productId, int quantity);
+
     @Modifying
     @Query("UPDATE Stock s SET s.quantity = s.quantity - :amount " +
            "WHERE s.id = :id AND s.quantity >= :amount")

@@ -43,16 +43,17 @@ public class Order {
         return orderDate;
     }
 
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-    }
-
     public OrderStatus getStatus() {
         return status;
     }
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    @PrePersist
+    protected void onCreate(){
+        this.orderDate=LocalDateTime.now();
     }
 
     @Override
