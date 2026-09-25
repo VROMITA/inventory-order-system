@@ -69,6 +69,7 @@ public class OrderService {
             orderItem.setQuantity(itemRequest.quantity());
             orderItem.setProduct(product);
             orderItem.setPriceAtOrder(product.getPrice());
+            orderItem.setWarehouse(stock.getWarehouse());
 
             orderItemRepository.save(orderItem);
 
@@ -78,7 +79,7 @@ public class OrderService {
         return savedOrder;
     }
 
-
+   @Transactional
     public void updateOrderStatus(Long orderId, OrderStatus newStatus){
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
@@ -89,6 +90,14 @@ public class OrderService {
             throw new InvalidOrderStatusTransitionException(order.getStatus(), newStatus);
         }
 
+        if(newStatus == OrderStatus.CANCELLED){
+            List<OrderItem> itemsToBeCancelled = orderItemRepository.findByOrderId(orderId);
+
+            for (OrderItem item : itemsToBeCancelled){
+                stockService.increaseStock(item.getProduct().getId(), item.getWarehouse().getId(), item.getQuantity());
+            }
+
+        }
         order.setStatus(newStatus);
         orderRepository.save(order);
     }
