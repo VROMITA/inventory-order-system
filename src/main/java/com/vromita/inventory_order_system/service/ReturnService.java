@@ -2,8 +2,10 @@ package com.vromita.inventory_order_system.service;
 
 import com.vromita.inventory_order_system.dto.ReturnRequest;
 import com.vromita.inventory_order_system.exception.InsufficientReturnException;
+import com.vromita.inventory_order_system.exception.InvalidReturnStatusException;
 import com.vromita.inventory_order_system.exception.ResourceNotFoundException;
 import com.vromita.inventory_order_system.model.OrderItem;
+import com.vromita.inventory_order_system.model.OrderStatus;
 import com.vromita.inventory_order_system.model.Return;
 import com.vromita.inventory_order_system.repository.OrderItemRepository;
 import com.vromita.inventory_order_system.repository.ReturnRepository;
@@ -33,6 +35,10 @@ public class ReturnService {
 
         OrderItem orderItem = orderItemRepository.findById(request.orderItemId())
                 .orElseThrow(() -> new ResourceNotFoundException("OrderItem", request.orderItemId()));
+
+        if(orderItem.getOrder().getStatus() != OrderStatus.DELIVERED ){
+            throw new InvalidReturnStatusException(orderItem.getOrder().getStatus());
+        }
 
         List<Return> existingReturns = returnRepository.findByOrderItemId(orderItem.getId());
         int alreadyReturned=existingReturns.stream()
