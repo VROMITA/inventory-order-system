@@ -50,7 +50,7 @@ The app expects an `application-local.yaml` file (gitignored) with database cred
 Versioning stays under `v0.x` until business logic, REST API, and tests are all solid together. Only then does `v1.0` ship.
 
 - [x] **v0.1**: Domain model (6 entities), Docker + PostgreSQL infrastructure, complete Repository layer
-- [ ] **v0.2**: Service layer, business logic for orders, stock, returns *(in progress)*
+- [x] **v0.2**: Service layer, business logic for orders, stock, returns *(in progress)*
 - [ ] **v0.3**: REST API, DTOs, controllers, centralized error handling
 - [ ] **v0.4**: Test suite (JUnit + Mockito), with a focus on optimistic locking under concurrency
 - [ ] **v1.0**: First stable release, Service + REST + Tests solid together
