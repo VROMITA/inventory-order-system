@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @RestController
@@ -47,6 +47,13 @@ public class ProductController {
 
         List<Product> productList = productService.getAllProducts();
         return ResponseEntity.status(HttpStatus.OK).body(productMapper.toResponseList(productList));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest request){
+
+        Product product = productService.updateProduct(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(productMapper.toResponse(product));
     }
 
 }

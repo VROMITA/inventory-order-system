@@ -1,6 +1,7 @@
 package com.vromita.inventory_order_system.service;
 
 
+import com.sun.jdi.request.DuplicateRequestException;
 import com.vromita.inventory_order_system.dto.ProductRequest;
 import com.vromita.inventory_order_system.exception.DuplicateSerialException;
 import com.vromita.inventory_order_system.exception.ResourceNotFoundException;
@@ -41,5 +42,16 @@ public class ProductService {
 
     public List<Product> getAllProducts(){
         return productRepository.findAll();
+    }
+
+    public Product updateProduct(Long id, ProductRequest productRequest){
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", id));
+
+        product.setName(productRequest.name());
+        product.setPrice(productRequest.price());
+
+       return productRepository.save(product);
     }
 }
