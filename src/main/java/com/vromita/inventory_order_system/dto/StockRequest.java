@@ -8,7 +8,7 @@ public record StockRequest(
 
         @NotNull(message ="product id mandatory")
         Long productId,
-        @NotBlank(message = "warehouse id mandatory")
+        @NotNull(message = "warehouse id mandatory")
         Long warehouseId,
         @Positive(message = "quantity must be positive")
         int quantity
