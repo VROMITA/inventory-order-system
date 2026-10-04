@@ -75,4 +75,13 @@ public class ReturnService {
 
         return returnRepository.findByOrderItemId(orderItemId);
     }
+
+    public List<Return> getReturnsByCustomerCode(String customerCode){
+
+        return returnRepository.findByOrderItem_Order_CustomerCode(customerCode);
+    }
+
+    public List<Return> getAllReturns(){
+        return returnRepository.findAll();
+    }
 }

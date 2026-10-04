@@ -11,4 +11,6 @@ public interface ReturnRepository extends JpaRepository<Return, Long> {
 
     List<Return> findByOrderItemId(Long orderItemId);
 
+    List<Return> findByOrderItem_Order_CustomerCode(String customerCode);
+
 }
