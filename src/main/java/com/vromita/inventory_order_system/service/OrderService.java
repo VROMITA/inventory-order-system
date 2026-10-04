@@ -80,7 +80,7 @@ public class OrderService {
     }
 
    @Transactional
-    public void updateOrderStatus(Long orderId, OrderStatus newStatus){
+    public Order updateOrderStatus(Long orderId, OrderStatus newStatus){
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
 
@@ -99,7 +99,9 @@ public class OrderService {
 
         }
         order.setStatus(newStatus);
-        orderRepository.save(order);
+
+        return orderRepository.save(order);
+
     }
 
     public Order getOrderById(Long orderId) {
@@ -109,5 +111,13 @@ public class OrderService {
 
     public List<Order> getOrdersByCustomerCode(String customerCode) {
         return orderRepository.findByCustomerCode(customerCode);
+    }
+
+    public List<Order> getAllOrders(){
+        return orderRepository.findAll();
+    }
+
+    public List<OrderItem> getOrderItemsByOrderId(Long orderId){
+        return orderItemRepository.findByOrderId(orderId);
     }
 }
