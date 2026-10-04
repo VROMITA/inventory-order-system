@@ -5,7 +5,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
 
-> ⚠️ **Actively under development.** Persistence layer and repositories are complete, business logic is in progress. See the [Roadmap](#roadmap) for detailed status.
+> ⚠️ **Actively under development.** Persistence layer, business logic, and the full REST API are complete. Test suite is in progress. See the [Roadmap](#roadmap) for detailed status.
 
 ## Overview
 
@@ -19,6 +19,7 @@ Backend for managing orders, multi-warehouse stock, and returns, inspired by rea
 | Framework | Spring Boot 4.x |
 | Persistence | Spring Data JPA + Hibernate |
 | Database | PostgreSQL 16 (via Docker Compose) |
+| Mapping | MapStruct |
 | Build | Maven |
 | Validation | Jakarta Bean Validation |
 
@@ -32,6 +33,19 @@ Six core entities, with many-to-one relationships and integrity constraints enfo
 - **Return**: returns linked to a specific order line, with returned quantity and reason
 
 Composite constraints (e.g. a unique `product_id + warehouse_id` pair on `Stock`) and controlled state transitions (`OrderStatus`: `ORDERED → PACKAGING → IN_TRANSPORT → DELIVERED`, with `CANCELLED` as an alternative terminal state) model real business rules, not just generic CRUD.
+
+Order creation automatically allocates stock from the first warehouse with sufficient quantity for each line. Each `OrderItem` keeps a reference to that warehouse, so cancelling an order restores the exact stock location it was taken from.
+
+## API Overview
+
+RESTful endpoints under `/api`, one resource per core entity:
+
+- `/api/products`, `/api/warehouses`: full CRUD for master data
+- `/api/stocks`: create and read, plus dedicated `receive` and `block` endpoints for inventory movements, keeping raw quantity changes behind named, intentional operations instead of a generic update
+- `/api/orders`: create, read (optional `customerCode` filter), and `cancel` (restores stock across all order lines)
+- `/api/returns`: create, read (optional `customerCode` filter)
+
+Write endpoints validate input via Jakarta Bean Validation. Domain-specific errors (duplicate codes, insufficient stock, invalid status transitions) are translated into proper HTTP status codes (404, 409) by a centralized exception handler, instead of leaking generic 500 responses.
 
 ## Running Locally
 
@@ -50,9 +64,9 @@ The app expects an `application-local.yaml` file (gitignored) with database cred
 Versioning stays under `v0.x` until business logic, REST API, and tests are all solid together. Only then does `v1.0` ship.
 
 - [x] **v0.1**: Domain model (6 entities), Docker + PostgreSQL infrastructure, complete Repository layer
-- [x] **v0.2**: Service layer, business logic for orders, stock, returns *(in progress)*
-- [ ] **v0.3**: REST API, DTOs, controllers, centralized error handling
-- [ ] **v0.4**: Test suite (JUnit + Mockito), with a focus on optimistic locking under concurrency
+- [x] **v0.2**: Service layer, business logic for orders, stock, returns
+- [x] **v0.3**: REST API, DTOs, controllers, centralized error handling
+- [ ] **v0.4**: Test suite (JUnit + Mockito), with a focus on optimistic locking under concurrency *(in progress)*
 - [ ] **v1.0**: First stable release, Service + REST + Tests solid together
 - [ ] **v1.1**: Hardening, structured logging, configuration polish
 - [ ] **v1.2**: API documentation (Swagger/OpenAPI)
